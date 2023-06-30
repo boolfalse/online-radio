@@ -7,9 +7,8 @@ function PlayerComponent() {
     const [trackImage, setTrackImage] = useState('/track-image.jpg');
     const [trackTitle, setTrackTitle] = useState('Artist - Title');
 
-    const [trackContainerDisplay, setTrackContainerDisplay] = useState('none');
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
     const [btnRestartDisplay, setBtnRestartDisplay] = useState('none');
-    const [showProgressBar, setShowProgressBar] = useState(false);
     const [progressPercent, setProgressPercent] = useState(0);
     const [btnPlayDisplay, setBtnPlayDisplay] = useState('block');
     const [btnPauseDisplay, setBtnPauseDisplay] = useState('none');
@@ -22,7 +21,6 @@ function PlayerComponent() {
                 setBtnRestartDisplay('block');
                 setBtnPlayDisplay('none');
                 setBtnPauseDisplay('none');
-                setShowProgressBar(false);
             }
             return newProgress;
         });
@@ -35,21 +33,26 @@ function PlayerComponent() {
         return () => clearInterval(intervalId);
     }
 
-    const toggle = () => {
-        if (btnRestartDisplay === 'block') {
-            setProgressPercent(0);
-            setBtnRestartDisplay('none');
-            setBtnPlayDisplay('none');
-            setBtnPauseDisplay('block');
-            setShowProgressBar(true);
+    const handlePlay = () => {
+        setIsAudioPlaying(true);
+        setBtnPlayDisplay('none');
+        setBtnPauseDisplay('block');
 
-            restartProgressBar(10)();
-        } else {
-            setTrackContainerDisplay(showProgressBar ? 'none' : 'block');
-            setBtnPlayDisplay(showProgressBar ? 'block' : 'none');
-            setBtnPauseDisplay(showProgressBar ? 'none' : 'block');
-            setShowProgressBar(!showProgressBar);
-        }
+        restartProgressBar(10)();
+    }
+    const handlePause = () => {
+        setIsAudioPlaying(false);
+        setBtnPlayDisplay('block');
+        setBtnPauseDisplay('none');
+    }
+    const handleRestart = () => {
+        setProgressPercent(0);
+        setBtnRestartDisplay('none');
+        setBtnPlayDisplay('none');
+        setBtnPauseDisplay('block');
+        setIsAudioPlaying(true);
+
+        restartProgressBar(10)();
     }
 
     useEffect(() => {
@@ -65,7 +68,7 @@ function PlayerComponent() {
         <main>
             <div id="track_image" style={{backgroundImage: `url(${trackImage})`}}></div>
             <div id="track_container">
-                <div id="track" style={{display: trackContainerDisplay}}>
+                <div id="track" style={{display: (isAudioPlaying ? 'block' : 'none')}}>
                     <div id="progress">
                         <Line percent={progressPercent} strokeWidth={2} strokeColor="#D3D3D3" />
                     </div>
@@ -74,11 +77,20 @@ function PlayerComponent() {
                     </div>
                 </div>
             </div>
-            <div id="controls">
-                <div className="control" id="btn_controls" onClick={toggle}>
-                    <i id="btn_play" style={{display: btnPlayDisplay}} className="material-icons icon">&#xE037;</i>
-                    <i id="btn_pause" style={{display: btnPauseDisplay}} className="material-icons icon">&#xE034;</i>
-                    <i id="btn_restart" style={{display: btnRestartDisplay}} className="material-icons icon ss-rotate-90 ss-ml-10">↻</i>
+            <div id="controls_container">
+                <div className="control" id="btn_controls">
+                    <i id="btn_play"
+                       onClick={handlePlay}
+                       style={{display: btnPlayDisplay}}
+                       className="material-icons icon">&#xE037;</i>
+                    <i id="btn_pause"
+                       onClick={handlePause}
+                       style={{display: btnPauseDisplay}}
+                       className="material-icons icon">&#xE034;</i>
+                    <i id="btn_restart"
+                       onClick={handleRestart}
+                       style={{display: btnRestartDisplay}}
+                       className="material-icons icon ss-rotate-90 ss-ml-10">↻</i>
                 </div>
             </div>
         </main>

@@ -106,7 +106,7 @@ main {
     transform: translateX(-100%);
   }
 }
-#controls {
+#controls_container {
   display: flex;
   align-items: center;
   justify-content: center;
