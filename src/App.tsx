@@ -1,10 +1,10 @@
 
-import ExampleComponent from "./conponents/ExampleComponent.tsx";
+import PlayerComponent from "./conponents/PlayerComponent.tsx";
 
 function App() {
   return (
       <>
-        <ExampleComponent />
+        <PlayerComponent />
       </>
   )
 }
