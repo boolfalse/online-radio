@@ -2,12 +2,12 @@
 import {useEffect, useState} from "react";
 import { Line } from 'rc-progress';
 
-function PlayerComponent() {
+function PlayerComponent({ isPlaying, setIsPlaying }) {
     const progressIntervalMs = 1000;
     const [trackImage, setTrackImage] = useState('/track-image.jpg');
     const [trackTitle, setTrackTitle] = useState('Artist - Title');
 
-    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(isPlaying);
     const [btnRestartDisplay, setBtnRestartDisplay] = useState('none');
     const [progressPercent, setProgressPercent] = useState(0);
     const [btnPlayDisplay, setBtnPlayDisplay] = useState('block');
@@ -61,6 +61,10 @@ function PlayerComponent() {
 
         return () => clearInterval(intervalId);
     }, []);
+
+    useEffect(() => {
+        setIsPlaying(isAudioPlaying);
+    }, [isAudioPlaying]);
 
     return <>
         <div id="bg_image" style={{background: `url(${trackImage}) 0/cover fixed`}}></div>
