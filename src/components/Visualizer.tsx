@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 function Visualizer({ isPlaying, isTrackInfoReceived }) {
-    const radioHost = import.meta.env.VITE_RADIO_HOST;
+    const streamUrl = `http://localhost:${import.meta.env.VITE_BACKEND_PORT}/stream`;
     const [audioElement, setAudioElement] = useState(null);
     const [analyser, setAnalyser] = useState(null);
     const [dataArray, setDataArray] = useState([]);
@@ -92,9 +92,7 @@ function Visualizer({ isPlaying, isTrackInfoReceived }) {
                 <canvas id="visualizer" ref={visualizerRef} style={{position: "fixed", zIndex: 1}} />
             </div>
             <audio crossOrigin='anonymous' ref={setAudioElement} controls style={{ display: 'none' }}>
-                {
-                    isTrackInfoReceived && <source src={`${radioHost}/stream`} type='audio/mpeg' />
-                }
+                {isTrackInfoReceived && <source src={streamUrl} type='audio/mpeg' />}
             </audio>
         </div>
     );

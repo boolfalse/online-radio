@@ -9,10 +9,6 @@ This is a simple online radio app built with [React.js](https://react.dev/) and 
 - [Express](https://expressjs.com/)
 - [socket.io](https://socket.io/)
 
-> Frontend UI inspired by: [Daily UI IX: Music Player #009](https://codepen.io/lgkonline/pen/BQdeyZ)
-<br />
-> Background image by: [GIPHY](https://www.pinterest.com/pin/406942516311166244/)
-
 ---
 
 
@@ -39,27 +35,26 @@ RADIO_PLAYLIST_FILE="tracks"
 VITE_BACKEND_PORT=5000
 VITE_SERVER_PORT=5001
 VITE_SOCKET_PORT=3000
-VITE_RADIO_HOST="http://localhost:5000"
 ```
 
 - Run the app:
 
 ```bash
-# run backend
-node backend/server.js
-# run backend (development)
-cd backend && npm run dev && cd ..
-# run backend (production
-cd backend && npm start && cd ..
-
 # development
 npm run dev
-# production
+# production (TODO: review before production)
 npm run build && npm run start
 ```
 
 
 
+### Notes:
+
+- Frontend UI inspired by: [Daily UI IX: Music Player #009](https://codepen.io/lgkonline/pen/BQdeyZ)
+- Background image from: [GIPHY](https://www.pinterest.com/pin/406942516311166244/)
+
+
+
 ### Author:
 
-- [boolfalse](https://boolfalse.com)
+- [BoolFalse](https://boolfalse.com)
