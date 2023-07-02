@@ -1,6 +1,6 @@
 
-import PlayerComponent from "./conponents/PlayerComponent.tsx";
-import Visualizer from "./conponents/Visualizer.tsx";
+import Player from "./components/Player.tsx";
+import Visualizer from "./components/Visualizer.tsx";
 import {useState} from "react";
 
 function App() {
@@ -12,9 +12,9 @@ function App() {
             <Visualizer isPlaying={isPlaying}
                         isTrackInfoReceived={isTrackInfoReceived}
             />
-            <PlayerComponent isPlaying={isPlaying}
-                             setIsPlaying={setIsPlaying}
-                             setIsTrackInfoReceived={setIsTrackInfoReceived}
+            <Player isPlaying={isPlaying}
+                    setIsPlaying={setIsPlaying}
+                    setIsTrackInfoReceived={setIsTrackInfoReceived}
             />
         </>
     )

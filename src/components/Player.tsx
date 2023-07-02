@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import { Line } from 'rc-progress';
 import axios from "axios";
 
-function PlayerComponent({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
+function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
     const defaultTrackTime = '0:00';
     const progressIntervalMs = 1000;
     const [trackImage, setTrackImage] = useState('/track-image.jpg');
@@ -182,4 +182,4 @@ function PlayerComponent({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
     </>
 }
 
-export default PlayerComponent;
+export default Player;
