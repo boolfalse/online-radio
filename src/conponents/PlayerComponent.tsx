@@ -1,11 +1,16 @@
 
 import {useEffect, useState} from "react";
 import { Line } from 'rc-progress';
+import axios from "axios";
 
-function PlayerComponent({ isPlaying, setIsPlaying }) {
+function PlayerComponent({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
+    const defaultTrackTime = '0:00';
     const progressIntervalMs = 1000;
     const [trackImage, setTrackImage] = useState('/track-image.jpg');
     const [trackTitle, setTrackTitle] = useState('Artist - Title');
+    const [trackDuration, setTrackDuration] = useState(defaultTrackTime);
+    const [trackTiming, setTrackTiming] = useState(defaultTrackTime);
+    const [startTiming, setStartTiming] = useState(defaultTrackTime);
 
     const [isAudioPlaying, setIsAudioPlaying] = useState(isPlaying);
     const [btnRestartDisplay, setBtnRestartDisplay] = useState('none');
@@ -55,9 +60,54 @@ function PlayerComponent({ isPlaying, setIsPlaying }) {
         restartProgressBar(10)();
     }
 
+    const timeFormat = (duration: number) => {
+        const minutes = Math.floor(duration/60);
+        const seconds = duration%60;
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+
+        return `${formattedMinutes}:${formattedSeconds}`;
+    }
+
+    const getTrackInfo = async () => {
+        try {
+            const response = await axios.get('/api/track-info');
+            const { message, track } = response.data;
+            const formattedDuration = timeFormat(track.duration);
+            const formattedTiming = timeFormat(track.current_timing);
+
+            return {
+                success: true,
+                message: message,
+                duration: formattedDuration,
+                timing: formattedTiming,
+                title: track.title,
+                image: track.image,
+            };
+        } catch (err) {
+            console.error(err.message);
+            return {
+                success: false,
+            }
+        }
+    }
+
     useEffect(() => {
         const seconds = 10;
         const intervalId = setInterval(() => startInterval(seconds, intervalId), progressIntervalMs);
+
+        getTrackInfo().then((trackInfo) => {
+            if (trackInfo.success) {
+                setIsTrackInfoReceived(true);
+                setTrackImage(trackInfo.image);
+                setTrackTitle(trackInfo.title);
+                setTrackDuration(trackInfo.duration);
+                setTrackTiming(trackInfo.timing);
+                setStartTiming(trackInfo.timing);
+            }
+        }).catch((err) => {
+            console.error(err.message);
+        });
 
         return () => clearInterval(intervalId);
     }, []);
@@ -65,6 +115,34 @@ function PlayerComponent({ isPlaying, setIsPlaying }) {
     useEffect(() => {
         setIsPlaying(isAudioPlaying);
     }, [isAudioPlaying]);
+
+    useEffect(() => {
+        setTrackTiming(startTiming === defaultTrackTime ? '0:00' : startTiming);
+    }, [startTiming]);
+    useEffect(() => {
+        if (trackDuration !== defaultTrackTime) { // && trackTiming !== defaultTrackTime
+            const interval = setInterval(() => {
+                const [currentMin, currentSec] = trackTiming.split(':').map(Number);
+                const [durationMin, durationSec] = trackDuration.split(':').map(Number);
+                if (currentMin === durationMin && currentSec === durationSec) {
+                    clearInterval(interval);
+                    console.log('Track ended!');
+                } else {
+                    let newSec = currentSec + 1;
+                    let newMin = currentMin;
+                    if (newSec >= 60) {
+                        newSec = 0;
+                        newMin += 1;
+                    }
+                    const formattedSec = String(newSec).padStart(2, '0');
+                    const formattedMin = String(newMin).padStart(2, '0');
+                    setTrackTiming(`${formattedMin}:${formattedSec}`);
+                }
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [trackTiming, trackDuration]);
 
     return <>
         <div id="bg_image" style={{background: `url(${trackImage}) 0/cover fixed`}}></div>
@@ -78,6 +156,9 @@ function PlayerComponent({ isPlaying, setIsPlaying }) {
                     </div>
                     <div id="title">
                         <div id="track_title">{trackTitle}</div>
+                    </div>
+                    <div id="duration_timing">
+                        <span id="track_duration">{trackDuration}</span> / <span id="track_timing">{trackTiming}</span>
                     </div>
                 </div>
             </div>

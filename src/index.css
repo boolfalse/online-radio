@@ -87,6 +87,13 @@ main {
     transform: translateX(-100%);
   }
 }
+
+#duration_timing {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+}
+
 #controls_container {
   display: flex;
   align-items: center;
@@ -152,7 +159,7 @@ main {
 }
 
 #track_container {
-  height: 72px;
+  height: 96px;
 }
 
 .ss-rotate-90 {

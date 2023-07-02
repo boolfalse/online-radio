@@ -1,10 +1,13 @@
 
 ## Online Radio
 
-This is a simple online radio app built with React and Node.js, using following technologies:
+This is a simple online radio app built with [React.js](https://react.dev/) and [Node.js](https://nodejs.org/), and using following technologies:
 
-- Vite
-- TypeScript
+- [Vite](https://vitejs.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [AudioContext (Web API)](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext)
+- [Express](https://expressjs.com/)
+- [socket.io](https://socket.io/)
 
 ---
 
@@ -18,17 +21,31 @@ This is a simple online radio app built with React and Node.js, using following 
 git clone git@github.com:boolfalse/online-radio.git && cd online-radio
 ```
 
-- Install dependencies:
+- Install frontend and backend dependencies:
 
 ```bash
-npm install && cd backend && npm install
+npm install && cd backend && npm install && cd ..
 ```
 
-- Set up environment variables in "backend/.env" file:
+- Set up environment variables in ".env" file as described in ".env.example" file.
+```dotenv
+BACKEND_PORT=5000
+SOCKET_PORT=3000
+RADIO_GIST_ID="***"
+RADIO_PLAYLIST_FILE="tracks"
+VITE_RADIO_HOST="http://localhost:5000"
+```
 
 - Run the app:
 
 ```bash
+# run backend
+node backend/server.js
+# run backend (development)
+cd backend && npm run dev && cd ..
+# run backend (production
+cd backend && npm start && cd ..
+
 # development
 npm run dev
 # production

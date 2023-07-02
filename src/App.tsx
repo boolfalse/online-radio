@@ -4,12 +4,18 @@ import Visualizer from "./conponents/Visualizer.tsx";
 import {useState} from "react";
 
 function App() {
+    const [isTrackInfoReceived, setIsTrackInfoReceived] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
 
     return (
         <>
-            <Visualizer isPlaying={isPlaying} />
-            <PlayerComponent isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+            <Visualizer isPlaying={isPlaying}
+                        isTrackInfoReceived={isTrackInfoReceived}
+            />
+            <PlayerComponent isPlaying={isPlaying}
+                             setIsPlaying={setIsPlaying}
+                             setIsTrackInfoReceived={setIsTrackInfoReceived}
+            />
         </>
     )
 }
