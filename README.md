@@ -50,8 +50,11 @@ npm run build && npm run start
 
 ### Notes:
 
-- Frontend UI inspired by: [Daily UI IX: Music Player #009](https://codepen.io/lgkonline/pen/BQdeyZ)
-- Background image from: [GIPHY](https://www.pinterest.com/pin/406942516311166244/)
+- This app uses [GitHub Gist](https://gist.github.com/) as a database for storing tracks ("tracks.json" file).
+- This app was built with the help of [OpenAI's Chatbot](https://chat.openai.com/).
+- Similar online radio app: [freeCodeCamp Radio](https://coderadio.freecodecamp.org/).
+- Frontend UI inspired by: [Daily UI IX: Music Player #009](https://codepen.io/lgkonline/pen/BQdeyZ).
+- Background image from: [GIPHY](https://www.pinterest.com/pin/406942516311166244/).
 
 
 

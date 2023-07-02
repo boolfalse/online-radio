@@ -60,6 +60,7 @@ function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
         restartProgressBar(10)();
     }
 
+    // TODO: use utils
     const timeFormat = (duration: number) => {
         const minutes = Math.floor(duration/60);
         const seconds = duration%60;
@@ -69,6 +70,7 @@ function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
         return `${formattedMinutes}:${formattedSeconds}`;
     }
 
+    // TODO: use hooks
     const getTrackInfo = async () => {
         try {
             const response = await axios.get('/api/track-info');

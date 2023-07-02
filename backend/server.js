@@ -9,7 +9,6 @@ const openRadio = require('openradio');
 const cors = require('cors');
 const SocketIO = require('socket.io');
 const { downloadFileFromGoogleDrive, getGistFileContent } = require('./utils');
-const assetsRouter = require("./assets-router");
 
 
 
@@ -18,7 +17,6 @@ const app = express();
 const radio = openRadio();
 app.use(cors());
 app.use("/", express.static(path.join(__dirname, "public")));
-app.use("/src", assetsRouter);
 
 
 
