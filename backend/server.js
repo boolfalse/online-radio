@@ -14,7 +14,6 @@ const assetsRouter = require("./assets-router");
 
 
 // configs
-const backendPort = process.env.BACKEND_PORT || 5000;
 const app = express();
 const radio = openRadio();
 app.use(cors());
@@ -25,18 +24,23 @@ app.use("/src", assetsRouter);
 
 // constants
 const playlistFile = process.env.RADIO_PLAYLIST_FILE || 'tracks';
+const backendPort = process.env.VITE_BACKEND_PORT || 5000;
 const socketPort = process.env.SOCKET_PORT || 3000;
-const radioHost = process.env.VITE_RADIO_HOST;
+const serverPort = process.env.VITE_SERVER_PORT || 5001;
 const trackPath = path.join(__dirname, '..', 'public', 'radio.mp3');
+const trackNotificationDelaySeconds = 0.5;
 
 
 
 // socket related
 const socketServer = http.createServer(app);
 const io = SocketIO(socketServer, {
-    cors: {
-        origin: [ radioHost ],
-    }
+    // cors: {
+    //     origin: [
+    //         `http://localhost:${serverPort}`,
+    //         // `http://localhost:${backendPort}`,
+    //     ],
+    // }
 });
 let trackInfo = {
     title: '',
@@ -113,8 +117,11 @@ io.on('connection', (socket) => {
     });
     if (trackInfo.duration > 0) {
         setTimeout(() => {
-            socket.emit('track_notification', trackInfo);
-        }, 500);
+            socket.emit('track_notification', {
+                ...trackInfo,
+                delay_seconds: trackNotificationDelaySeconds,
+            });
+        }, trackNotificationDelaySeconds * 1000);
     }
     socketInstance = socket;
 });

@@ -8,7 +8,7 @@ body {
 }
 
 #bg_image {
-  background: url('public/moving-clouds.gif') 0/cover fixed;
+  background: url('/moving-clouds.gif') 0/cover fixed;
   position: fixed;
   top: 0;
   right: 0;
