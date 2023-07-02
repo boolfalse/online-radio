@@ -145,10 +145,10 @@ function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
     }, [trackTiming, trackDuration]);
 
     return <>
-        <div id="bg_image" style={{background: `url(${trackImage}) 0/cover fixed`}}></div>
+        <div id="bg_image"></div>
         <div id="bg_shadow"></div>
         <main>
-            <div id="track_image" style={{backgroundImage: `url(${trackImage})`}}></div>
+            <div id="track_image" style={{background: `url(${trackImage}) no-repeat center center / cover`}}></div>
             <div id="track_container">
                 <div id="track" style={{display: (isAudioPlaying ? 'block' : 'none')}}>
                     <div id="progress">
