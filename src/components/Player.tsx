@@ -12,7 +12,7 @@ function Player({
                     isTrackChanged,
                     setIsTrackChanged,
 }) {
-    const progressIntervalMs = 1000;
+    const progressIntervalSeconds = 1;
     const [startTiming, setStartTiming] = useState(defaultTrackInfo.time); // start timing (for example, '1:04')
     const [trackTiming, setTrackTiming] = useState(defaultTrackInfo.time); // the current timing (for example, '1:12')
     const [trackDuration, setTrackDuration] = useState(defaultTrackInfo.time); // formatted duration (for example, '3:45')
@@ -20,26 +20,25 @@ function Player({
     const [progressPercent, setProgressPercent] = useState(0);
     const [btnPlayDisplay, setBtnPlayDisplay] = useState(true);
 
-    const startInterval = (seconds, intervalId) => {
-        setProgressPercent((prevProgress) => {
-            const newProgress = prevProgress + Math.floor(100 / seconds);
-            if (newProgress >= 100) { // ended! (the case when the progress bar is full)
-                clearInterval(intervalId);
-            }
-            return newProgress;
-        });
-    };
-
     const startProgress = () => {
-        // percent already calculated and set in getTrackInfo()
-        // currentTrackInfo.duration already set in getTrackInfo()
+        if (currentTrackInfo.duration === 0) {
+            return;
+        }
+
+        // here the progressPercent already calculated and set in getTrackInfo()
+        // here currentTrackInfo.duration already set in getTrackInfo()
 
         const intervalId = setInterval(() => {
-            startInterval(currentTrackInfo.duration, intervalId)
-        }, progressIntervalMs);
-
-        // Clean up the interval when the component unmounts
-        return () => clearInterval(intervalId);
+            setProgressPercent((prevProgressPercent) => {
+                const newProgressPercent = Math.floor((prevProgressPercent + progressIntervalSeconds / currentTrackInfo.duration * 100) * 100) / 100;
+                if (newProgressPercent >= 100) {
+                    clearInterval(intervalId);
+                    // console.log('Progress finished!');
+                    return 0;
+                }
+                return newProgressPercent;
+            });
+        }, progressIntervalSeconds * 1000);
     }
 
     const handlePlay = () => {
@@ -130,7 +129,7 @@ function Player({
                 const [durationMin, durationSec] = trackDuration.split(':').map(Number);
                 if (currentMin === durationMin && currentSec === durationSec) {
                     clearInterval(interval);
-                    console.log('Track ended!');
+                    // console.log('Track ended!');
                 } else {
                     let newSec = currentSec + 1;
                     let newMin = currentMin;

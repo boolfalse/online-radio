@@ -59,6 +59,14 @@ npm run build && npm run start
 
 
 
+### TODOs:
+
+- Integrate ESLint.
+- Add volume control.
+- Review production build.
+
+
+
 ### Author:
 
 - [BoolFalse](https://boolfalse.com)

@@ -156,10 +156,6 @@ main {
   transition: opacity 1s ease;
 }
 
-#track, #btn_pause, #btn_restart {
-  display: none;
-}
-
 #track_container {
   height: 96px;
 }
