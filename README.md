@@ -50,9 +50,10 @@ npm run build && npm run start
 
 ### Notes:
 
-- This app uses [GitHub Gist](https://gist.github.com/) as a database for storing tracks ("tracks.json" file).
+- This app uses [GitHub Gist](https://gist.github.com/6b66a0065c70a33f95e0e831cb0c7e9f) as a database for storing tracks ("tracks.json" file).
 - This app was built with the help of [OpenAI's Chatbot](https://chat.openai.com/).
 - Similar online radio app: [freeCodeCamp Radio](https://coderadio.freecodecamp.org/).
+- Testing tracks taken from [freesound.org](https://freesound.org/search/?q=&f=&w=&s=Duration+%28shortest+first%29&advanced=0&g=1&page=9000#sound).
 - Frontend UI inspired by: [Daily UI IX: Music Player #009](https://codepen.io/lgkonline/pen/BQdeyZ).
 - Background image from: [GIPHY](https://www.pinterest.com/pin/406942516311166244/).
 

@@ -4,6 +4,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+const ffmpeg = require("fluent-ffmpeg");
 const express = require('express');
 const openRadio = require('openradio');
 const cors = require('cors');
@@ -46,17 +47,6 @@ let trackInfo = {
     started_at: 0,
 };
 let listenersCount = 0;
-let socketInstance = null;
-const fireNewTrackEvent = (socketArg, trackInfoArg) => {
-    const manualDelaySeconds = 1;
-    setTimeout(() => {
-        console.log(`Send socket event: playing "${trackInfo.title}"`);
-        socketArg.emit('track_changed', {
-            ...trackInfoArg,
-            manual_delay_seconds: manualDelaySeconds,
-        });
-    }, manualDelaySeconds * 1000);
-}
 
 
 
@@ -123,9 +113,9 @@ io.on('connection', (socket) => {
         io.emit('listeners_count', listenersCount);
     });
     if (trackInfo.duration > 0) {
-        fireNewTrackEvent(socket, trackInfo);
+        console.log(`Playing track: ${trackInfo.title}`);
+        socket.emit('track_changed', trackInfo);
     }
-    socketInstance = socket;
 });
 
 app.listen(backendPort, () => {
@@ -147,16 +137,29 @@ const playTrack = () => {
             // download random track from the source
             downloadFileFromGoogleDrive(playlist[randomNumber].file, trackPath)
                 .then(() => {
-                    radio.play(fs.createReadStream(trackPath));
+                    ffmpeg.ffprobe(trackPath, (err, metadata) => {
+                        if (err) {
+                            console.log(err.message);
+                            return;
+                        }
+                        const trackDuration = metadata.format.duration;
+                        const duration = trackDuration ? Math.floor(trackDuration) : 0;
+                        if (duration === 0) {
+                            console.log('Track duration is 0, skipping...');
+                            playTrack();
+                            return;
+                        }
 
-                    trackInfo.title = playlist[randomNumber].title;
-                    trackInfo.image = playlist[randomNumber].image;
-                    trackInfo.duration = playlist[randomNumber].duration;
-                    trackInfo.started_at = Math.floor(Date.now() / 1000);
+                        radio.play(fs.createReadStream(trackPath));
 
-                    if (socketInstance) {
-                        fireNewTrackEvent(socketInstance, trackInfo);
-                    }
+                        trackInfo.title = playlist[randomNumber].title;
+                        trackInfo.image = playlist[randomNumber].image || '/track-image.jpg';
+                        trackInfo.duration = duration; // playlist[randomNumber].duration;
+                        trackInfo.started_at = Math.floor(Date.now() / 1000);
+
+                        console.log(`Playing track: ${trackInfo.title}`);
+                        io.sockets.emit('track_changed', trackInfo);
+                    });
                 })
                 .catch((err) => {
                     console.log(err.message);
