@@ -91,9 +91,11 @@ function Visualizer({ isPlaying, isTrackInfoReceived }) {
             <div id="visualizer-container">
                 <canvas id="visualizer" ref={visualizerRef} style={{position: "fixed", zIndex: 1}} />
             </div>
-            <audio crossOrigin='anonymous' ref={setAudioElement} controls style={{ display: 'none' }}>
-                {isTrackInfoReceived && <source src={streamUrl} type='audio/mpeg' />}
-            </audio>
+            {isTrackInfoReceived && (
+                <audio crossOrigin='anonymous' ref={setAudioElement} controls style={{ display: 'none' }}>
+                    <source src={streamUrl} type='audio/mpeg' />
+                </audio>
+            )}
         </div>
     );
 };

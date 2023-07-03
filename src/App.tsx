@@ -5,19 +5,33 @@ import {useState} from "react";
 import Info from "./components/Info.tsx";
 
 function App() {
-    const [isTrackInfoReceived, setIsTrackInfoReceived] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isTrackChanged, setIsTrackChanged] = useState(false);
+    const defaultTrackInfo = {
+        title: 'Artist - Title',
+        image: '/track-image.jpg',
+        duration: 0,
+        time: '0:00',
+    };
+    const [currentTrackInfo, setCurrentTrackInfo] = useState(defaultTrackInfo);
 
     return (
         <>
             <Visualizer isPlaying={isPlaying}
-                        isTrackInfoReceived={isTrackInfoReceived}
+                        isTrackInfoReceived={currentTrackInfo.duration !== defaultTrackInfo.duration}
             />
-            <Player isPlaying={isPlaying}
+            <Player defaultTrackInfo={defaultTrackInfo}
+                    isPlaying={isPlaying}
                     setIsPlaying={setIsPlaying}
-                    setIsTrackInfoReceived={setIsTrackInfoReceived}
+                    currentTrackInfo={currentTrackInfo}
+                    setCurrentTrackInfo={setCurrentTrackInfo}
+                    isTrackChanged={isTrackChanged}
+                    setIsTrackChanged={setIsTrackChanged}
             />
-            <Info />
+            <Info currentTrackInfo={currentTrackInfo}
+                  setCurrentTrackInfo={setCurrentTrackInfo}
+                  setIsTrackChanged={setIsTrackChanged}
+            />
         </>
     )
 }

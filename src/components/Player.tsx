@@ -3,69 +3,60 @@ import {useEffect, useState} from "react";
 import { Line } from 'rc-progress';
 import axios from "axios";
 
-function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
-    const defaultTrackTime = '0:00';
+function Player({
+                    defaultTrackInfo,
+                    isPlaying,
+                    setIsPlaying,
+                    currentTrackInfo,
+                    setCurrentTrackInfo,
+                    isTrackChanged,
+                    setIsTrackChanged,
+}) {
     const progressIntervalMs = 1000;
-    const [trackImage, setTrackImage] = useState('/track-image.jpg');
-    const [trackTitle, setTrackTitle] = useState('Artist - Title');
-    const [trackDuration, setTrackDuration] = useState(defaultTrackTime);
-    const [trackTiming, setTrackTiming] = useState(defaultTrackTime);
-    const [startTiming, setStartTiming] = useState(defaultTrackTime);
+    const [startTiming, setStartTiming] = useState(defaultTrackInfo.time); // start timing (for example, '1:04')
+    const [trackTiming, setTrackTiming] = useState(defaultTrackInfo.time); // the current timing (for example, '1:12')
+    const [trackDuration, setTrackDuration] = useState(defaultTrackInfo.time); // formatted duration (for example, '3:45')
 
-    const [isAudioPlaying, setIsAudioPlaying] = useState(isPlaying);
-    const [btnRestartDisplay, setBtnRestartDisplay] = useState('none');
     const [progressPercent, setProgressPercent] = useState(0);
-    const [btnPlayDisplay, setBtnPlayDisplay] = useState('block');
-    const [btnPauseDisplay, setBtnPauseDisplay] = useState('none');
+    const [btnPlayDisplay, setBtnPlayDisplay] = useState(true);
 
     const startInterval = (seconds, intervalId) => {
         setProgressPercent((prevProgress) => {
             const newProgress = prevProgress + Math.floor(100 / seconds);
-            if (newProgress >= 100) {
+            if (newProgress >= 100) { // ended! (the case when the progress bar is full)
                 clearInterval(intervalId);
-                setBtnRestartDisplay('block');
-                setBtnPlayDisplay('none');
-                setBtnPauseDisplay('none');
             }
             return newProgress;
         });
     };
 
-    const restartProgressBar = (seconds: number) => () => {
-        const intervalId = setInterval(() => startInterval(seconds, intervalId), progressIntervalMs);
+    const startProgress = () => {
+        // percent already calculated and set in getTrackInfo()
+        // currentTrackInfo.duration already set in getTrackInfo()
+
+        const intervalId = setInterval(() => {
+            startInterval(currentTrackInfo.duration, intervalId)
+        }, progressIntervalMs);
 
         // Clean up the interval when the component unmounts
         return () => clearInterval(intervalId);
     }
 
     const handlePlay = () => {
-        setIsAudioPlaying(true);
-        setBtnPlayDisplay('none');
-        setBtnPauseDisplay('block');
-
-        restartProgressBar(10)();
+        setIsPlaying(true);
+        setBtnPlayDisplay(false);
     }
     const handlePause = () => {
-        setIsAudioPlaying(false);
-        setBtnPlayDisplay('block');
-        setBtnPauseDisplay('none');
-    }
-    const handleRestart = () => {
-        setProgressPercent(0);
-        setBtnRestartDisplay('none');
-        setBtnPlayDisplay('none');
-        setBtnPauseDisplay('block');
-        setIsAudioPlaying(true);
-
-        restartProgressBar(10)();
+        setIsPlaying(false);
+        setBtnPlayDisplay(true);
     }
 
     // TODO: use utils
     const timeFormat = (duration: number) => {
         const minutes = Math.floor(duration/60);
         const seconds = duration%60;
-        const formattedMinutes = String(minutes).padStart(2, '0');
-        const formattedSeconds = String(seconds).padStart(2, '0');
+        const formattedSeconds = (seconds < 10) ? `0${seconds}` : seconds;
+        const formattedMinutes = (minutes < 10) ? `0${minutes}` : minutes;
 
         return `${formattedMinutes}:${formattedSeconds}`;
     }
@@ -75,54 +66,65 @@ function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
         try {
             const response = await axios.get('/api/track-info');
             const { message, track } = response.data;
-            const formattedDuration = timeFormat(track.duration);
-            const formattedTiming = timeFormat(track.current_timing);
 
             return {
                 success: true,
                 message: message,
-                duration: formattedDuration,
-                timing: formattedTiming,
-                title: track.title,
-                image: track.image,
+                ...track, // title, image, duration, difference_in_seconds
             };
         } catch (err) {
-            console.error(err.message);
             return {
                 success: false,
+                message: err.message,
             }
         }
     }
+    useEffect(() => {
+        if (isTrackChanged) {
+            // TODO: avoid from duplications
+            getTrackInfo().then((trackInfo) => {
+                if (trackInfo.success) {
+                    setTrackDuration(timeFormat(trackInfo.duration));
+                    setStartTiming(timeFormat(trackInfo.difference_in_seconds));
+                    setTrackTiming(timeFormat(trackInfo.difference_in_seconds));
+
+                    const percent = Math.floor(trackInfo.difference_in_seconds / trackInfo.duration * 100);
+                    setProgressPercent(percent);
+
+                    setCurrentTrackInfo(trackInfo);
+                    startProgress();
+                }
+            }).catch((err) => {
+                console.error(err.message);
+            });
+
+            setIsTrackChanged(false);
+        }
+    }, [isTrackChanged]);
 
     useEffect(() => {
-        const seconds = 10;
-        const intervalId = setInterval(() => startInterval(seconds, intervalId), progressIntervalMs);
-
         getTrackInfo().then((trackInfo) => {
             if (trackInfo.success) {
-                setIsTrackInfoReceived(true);
-                setTrackImage(trackInfo.image);
-                setTrackTitle(trackInfo.title);
-                setTrackDuration(trackInfo.duration);
-                setTrackTiming(trackInfo.timing);
-                setStartTiming(trackInfo.timing);
+                setTrackDuration(timeFormat(trackInfo.duration));
+                setStartTiming(timeFormat(trackInfo.difference_in_seconds));
+                setTrackTiming(timeFormat(trackInfo.difference_in_seconds));
+
+                const percent = Math.floor(trackInfo.difference_in_seconds / trackInfo.duration * 100);
+                setProgressPercent(percent);
+
+                setCurrentTrackInfo(trackInfo);
+                startProgress();
             }
         }).catch((err) => {
             console.error(err.message);
         });
-
-        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
-        setIsPlaying(isAudioPlaying);
-    }, [isAudioPlaying]);
-
-    useEffect(() => {
-        setTrackTiming(startTiming === defaultTrackTime ? '0:00' : startTiming);
+        setTrackTiming(startTiming === defaultTrackInfo.time ? defaultTrackInfo.time : startTiming);
     }, [startTiming]);
     useEffect(() => {
-        if (trackDuration !== defaultTrackTime) { // && trackTiming !== defaultTrackTime
+        if (currentTrackInfo.time !== defaultTrackInfo.time) { // TODO: || check that track just changed
             const interval = setInterval(() => {
                 const [currentMin, currentSec] = trackTiming.split(':').map(Number);
                 const [durationMin, durationSec] = trackDuration.split(':').map(Number);
@@ -136,28 +138,29 @@ function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
                         newSec = 0;
                         newMin += 1;
                     }
-                    const formattedSec = String(newSec).padStart(2, '0');
-                    const formattedMin = String(newMin).padStart(2, '0');
+                    // TODO: use utils (timeFormat)
+                    const formattedSec = (newSec < 10) ? `0${newSec}` : newSec;
+                    const formattedMin = (newMin < 10) ? `0${newMin}` : newMin;
                     setTrackTiming(`${formattedMin}:${formattedSec}`);
                 }
             }, 1000);
 
             return () => clearInterval(interval);
         }
-    }, [trackTiming, trackDuration]);
+    }, [trackTiming, trackDuration]); // TODO: , check that track just changed
 
     return <>
         <div id="bg_image"></div>
         <div id="bg_shadow"></div>
         <main>
-            <div id="track_image" style={{background: `url(${trackImage}) no-repeat center center / cover`}}></div>
+            <div id="track_image" style={{background: `url(${currentTrackInfo.image}) no-repeat center center / cover`}}></div>
             <div id="track_container">
-                <div id="track" style={{display: (isAudioPlaying ? 'block' : 'none')}}>
+                <div id="track" style={{display: (isPlaying ? 'block' : 'none')}}>
                     <div id="progress">
                         <Line percent={progressPercent} strokeWidth={2} strokeColor="#D3D3D3" />
                     </div>
                     <div id="title">
-                        <div id="track_title">{trackTitle}</div>
+                        <div id="track_title">{currentTrackInfo.title}</div>
                     </div>
                     <div id="duration_timing">
                         <span id="track_duration">{trackDuration}</span> / <span id="track_timing">{trackTiming}</span>
@@ -168,16 +171,12 @@ function Player({ isPlaying, setIsPlaying, setIsTrackInfoReceived }) {
                 <div className="control" id="btn_controls">
                     <i id="btn_play"
                        onClick={handlePlay}
-                       style={{display: btnPlayDisplay}}
+                       style={{display: btnPlayDisplay ? 'block' : 'none'}}
                        className="material-icons icon">&#xE037;</i>
                     <i id="btn_pause"
                        onClick={handlePause}
-                       style={{display: btnPauseDisplay}}
+                       style={{display: btnPlayDisplay ? 'none' : 'block'}}
                        className="material-icons icon">&#xE034;</i>
-                    <i id="btn_restart"
-                       onClick={handleRestart}
-                       style={{display: btnRestartDisplay}}
-                       className="material-icons icon ss-rotate-90 ss-ml-10">↻</i>
                 </div>
             </div>
         </main>

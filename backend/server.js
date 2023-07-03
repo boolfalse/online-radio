@@ -26,7 +26,6 @@ const backendPort = process.env.VITE_BACKEND_PORT || 5000;
 const socketPort = process.env.SOCKET_PORT || 3000;
 const serverPort = process.env.VITE_SERVER_PORT || 5001;
 const trackPath = path.join(__dirname, '..', 'public', 'radio.mp3');
-const trackNotificationDelaySeconds = 0.5;
 
 
 
@@ -48,6 +47,16 @@ let trackInfo = {
 };
 let listenersCount = 0;
 let socketInstance = null;
+const fireNewTrackEvent = (socketArg, trackInfoArg) => {
+    const manualDelaySeconds = 1;
+    setTimeout(() => {
+        console.log(`Send socket event: playing "${trackInfo.title}"`);
+        socketArg.emit('track_changed', {
+            ...trackInfoArg,
+            manual_delay_seconds: manualDelaySeconds,
+        });
+    }, manualDelaySeconds * 1000);
+}
 
 
 
@@ -63,13 +72,13 @@ app.get("/api", (req, res) => {
     });
 });
 app.get("/api/track-info", (req, res) => {
-    const currentTiming = Math.floor(Date.now() / 1000) - trackInfo.started_at;
+    const differenceInSeconds = Math.floor(Date.now() / 1000) - trackInfo.started_at;
 
     return res.status(200).json({
         message: "Track info retrieved successfully.",
         track: {
             ...trackInfo,
-            current_timing: currentTiming,
+            difference_in_seconds: differenceInSeconds,
         },
     });
 });
@@ -114,12 +123,7 @@ io.on('connection', (socket) => {
         io.emit('listeners_count', listenersCount);
     });
     if (trackInfo.duration > 0) {
-        setTimeout(() => {
-            socket.emit('track_notification', {
-                ...trackInfo,
-                delay_seconds: trackNotificationDelaySeconds,
-            });
-        }, trackNotificationDelaySeconds * 1000);
+        fireNewTrackEvent(socket, trackInfo);
     }
     socketInstance = socket;
 });
@@ -140,7 +144,7 @@ const playTrack = () => {
         .then((data) => {
             const playlist = JSON.parse(data);
             const randomNumber = Math.floor(Math.random() * playlist.length);
-            // download random track from Google Drive and play it
+            // download random track from the source
             downloadFileFromGoogleDrive(playlist[randomNumber].file, trackPath)
                 .then(() => {
                     radio.play(fs.createReadStream(trackPath));
@@ -150,11 +154,8 @@ const playTrack = () => {
                     trackInfo.duration = playlist[randomNumber].duration;
                     trackInfo.started_at = Math.floor(Date.now() / 1000);
 
-                    console.log(`Now playing: ${trackInfo.title}`);
                     if (socketInstance) {
-                        setTimeout(() => {
-                            socketInstance.emit('track_notification', trackInfo);
-                        }, 500);
+                        fireNewTrackEvent(socketInstance, trackInfo);
                     }
                 })
                 .catch((err) => {
