@@ -156,7 +156,7 @@ const playTrack = () => {
                         radio.play(fs.createReadStream(trackPath));
 
                         trackInfo.title = playlist[randomNumber].title;
-                        trackInfo.image = playlist[randomNumber].image || '/track-image.jpg';
+                        trackInfo.image = playlist[randomNumber].image;
                         trackInfo.duration = duration; // playlist[randomNumber].duration;
                         trackInfo.started_at = Math.floor(Date.now() / 1000);
 

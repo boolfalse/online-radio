@@ -9,7 +9,7 @@ function App() {
     const [isTrackChanged, setIsTrackChanged] = useState(false);
     const defaultTrackInfo = {
         title: 'Artist - Title',
-        image: '/track-image.jpg',
+        image: '/default.png',
         duration: 0,
         time: '0:00',
     };
