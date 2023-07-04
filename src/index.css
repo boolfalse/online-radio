@@ -64,7 +64,7 @@ main {
 
 #image_wrapper {
   border: 1px solid #ffffff;
-  height: 210px;
+  height: 160px;
   width: 210px;
   /*position: absolute;*/
   margin: auto;
@@ -84,18 +84,19 @@ main {
 }
 #image_wrapper .image-cube {
   width: 210px;
-  height: 210px;
+  height: 160px;
   transform-style: preserve-3d;
   position: relative;
   transition: 2s;
 }
 #image_wrapper .image-cube div {
-  height: 210px;
+  height: 160px;
   width: 210px;
   position: absolute;
 }
 #image_wrapper img {
   width: 100%;
+  height: 100%;
   transform: translateZ(0);
 }
 #image_wrapper .pos-0 {
