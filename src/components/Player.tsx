@@ -1,5 +1,5 @@
 
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import { Line } from 'rc-progress';
 import axios from "axios";
 
@@ -19,6 +19,9 @@ function Player({
 
     const [progressPercent, setProgressPercent] = useState(0);
     const [btnPlayDisplay, setBtnPlayDisplay] = useState(true);
+
+    const [cubeDegree, setCubeDegree] = useState(0);
+    const cubeRef = useRef(null);
 
     const startProgress = () => {
         if (currentTrackInfo.duration === 0) {
@@ -60,6 +63,16 @@ function Player({
         return `${formattedMinutes}:${formattedSeconds}`;
     }
 
+    const rotateCube = (trackImage) => {
+        const newCubeDegree = (cubeDegree - 90) % 360;
+        const nextImage = cubeRef.current.querySelector(`.pos-${newCubeDegree * -1}`);
+        nextImage.querySelector('img').src = trackImage; // currentTrackInfo.image
+        setTimeout(() => {
+            cubeRef.current.style.transform = `rotateY(${newCubeDegree}deg)`;
+            setCubeDegree(newCubeDegree);
+        }, 0.1 * 1000); // manual delay
+    }
+
     // TODO: use hooks
     const getTrackInfo = async () => {
         try {
@@ -92,6 +105,8 @@ function Player({
 
                     setCurrentTrackInfo(trackInfo);
                     startProgress();
+
+                    rotateCube(trackInfo.image);
                 }
             }).catch((err) => {
                 console.error(err.message);
@@ -113,6 +128,9 @@ function Player({
 
                 setCurrentTrackInfo(trackInfo);
                 startProgress();
+
+                const firstImage = cubeRef.current.querySelector(`.pos-0`);
+                firstImage.querySelector('img').src = trackInfo.image;
             }
         }).catch((err) => {
             console.error(err.message);
@@ -152,7 +170,24 @@ function Player({
         <div id="bg_image"></div>
         <div id="bg_shadow"></div>
         <main>
-            <div id="track_image" style={{background: `url(${currentTrackInfo.image}) no-repeat center center / cover`}}></div>
+            <div id="image_wrapper">
+                <div className="container">
+                    <div className="image-cube" ref={cubeRef}>
+                        <div className="pos-0">
+                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                        </div>
+                        <div className="pos-90">
+                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                        </div>
+                        <div className="pos-180">
+                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                        </div>
+                        <div className="pos-270">
+                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="track_container">
                 <div id="track" style={{display: (isPlaying ? 'block' : 'none')}}>
                     <div id="progress">

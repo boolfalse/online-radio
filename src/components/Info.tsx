@@ -7,22 +7,8 @@ const socket = io(`http://localhost:${socketPort}`, {
     transports: ['websocket'],
 });
 
-function Info({
-                  currentTrackInfo,
-                  setCurrentTrackInfo,
-                  setIsTrackChanged
-}) {
+function Info({ setCurrentTrackInfo, setIsTrackChanged }) {
     const [listenersCount, setListenersCount] = useState(0);
-
-    // TODO: use utils
-    const timeFormat = (duration: number) => {
-        const minutes = Math.floor(duration/60);
-        const seconds = duration%60;
-        const formattedSeconds = (seconds < 10) ? `0${seconds}` : seconds;
-        const formattedMinutes = (minutes < 10) ? `0${minutes}` : minutes;
-
-        return `${formattedMinutes}:${formattedSeconds}`;
-    }
 
     useEffect(() => {
         socket.on('listeners_count', (count) => {

@@ -28,8 +28,7 @@ function App() {
                     isTrackChanged={isTrackChanged}
                     setIsTrackChanged={setIsTrackChanged}
             />
-            <Info currentTrackInfo={currentTrackInfo}
-                  setCurrentTrackInfo={setCurrentTrackInfo}
+            <Info setCurrentTrackInfo={setCurrentTrackInfo}
                   setIsTrackChanged={setIsTrackChanged}
             />
         </>

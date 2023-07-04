@@ -47,6 +47,7 @@ let trackInfo = {
     started_at: 0,
 };
 let listenersCount = 0;
+const manualDelayTrackChangedEventSeconds = 0;
 
 
 
@@ -113,8 +114,10 @@ io.on('connection', (socket) => {
         io.emit('listeners_count', listenersCount);
     });
     if (trackInfo.duration > 0) {
-        console.log(`Playing track: ${trackInfo.title}`);
-        socket.emit('track_changed', trackInfo);
+        setTimeout(() => {
+            // console.log(`Playing track: ${trackInfo.title}`);
+            socket.emit('track_changed', trackInfo);
+        }, manualDelayTrackChangedEventSeconds * 1000);
     }
 });
 
@@ -157,8 +160,10 @@ const playTrack = () => {
                         trackInfo.duration = duration; // playlist[randomNumber].duration;
                         trackInfo.started_at = Math.floor(Date.now() / 1000);
 
-                        console.log(`Playing track: ${trackInfo.title}`);
-                        io.sockets.emit('track_changed', trackInfo);
+                        setTimeout(() => {
+                            console.log(`Playing track: ${trackInfo.title}`);
+                            io.sockets.emit('track_changed', trackInfo);
+                        }, manualDelayTrackChangedEventSeconds * 1000);
                     });
                 })
                 .catch((err) => {
