@@ -3,6 +3,28 @@ import {useEffect, useRef, useState} from "react";
 import { Line } from 'rc-progress';
 import axios from "axios";
 
+export interface PlayerInterface {
+    defaultTrackInfo: {
+        title: string;
+        image: string;
+        duration: number;
+        time: string;
+        difference_in_seconds: number;
+    };
+    isPlaying: boolean;
+    setIsPlaying: Function;
+    currentTrackInfo: {
+        title: string;
+        image: string;
+        duration: number;
+        time: string;
+        difference_in_seconds: number;
+    };
+    setCurrentTrackInfo: Function;
+    isTrackChanged: boolean;
+    setIsTrackChanged: Function;
+}
+
 function Player({
                     defaultTrackInfo,
                     isPlaying,
@@ -11,7 +33,7 @@ function Player({
                     setCurrentTrackInfo,
                     isTrackChanged,
                     setIsTrackChanged,
-}) {
+}: PlayerInterface) {
     const progressIntervalSeconds = 1;
     const [startTiming, setStartTiming] = useState(defaultTrackInfo.time); // start timing (for example, '1:04')
     const [trackTiming, setTrackTiming] = useState(defaultTrackInfo.time); // the current timing (for example, '1:12')
@@ -21,7 +43,7 @@ function Player({
     const [btnPlayDisplay, setBtnPlayDisplay] = useState(true);
 
     const [cubeDegree, setCubeDegree] = useState(0);
-    const cubeRef = useRef(null);
+    const cubeRef: any = useRef(null);
 
     const startProgress = () => {
         if (currentTrackInfo.duration === 0) {
@@ -54,6 +76,10 @@ function Player({
     }
 
     // TODO: use utils
+    function getErrorMessage(error: unknown) {
+        if (error instanceof Error) return error.message
+        return String(error)
+    }
     const timeFormat = (duration: number) => {
         const minutes = Math.floor(duration/60);
         const seconds = duration%60;
@@ -63,7 +89,7 @@ function Player({
         return `${formattedMinutes}:${formattedSeconds}`;
     }
 
-    const rotateCube = (trackImage) => {
+    const rotateCube = (trackImage: string) => {
         const newCubeDegree = (cubeDegree - 90) % 360;
         const nextImage = cubeRef.current.querySelector(`.pos-${newCubeDegree * -1}`);
         nextImage.querySelector('img').src = trackImage; // currentTrackInfo.image
@@ -87,7 +113,7 @@ function Player({
         } catch (err) {
             return {
                 success: false,
-                message: err.message,
+                message: getErrorMessage(err),
             }
         }
     }
@@ -109,7 +135,7 @@ function Player({
                     rotateCube(trackInfo.image);
                 }
             }).catch((err) => {
-                console.error(err.message);
+                console.error(getErrorMessage(err));
             });
 
             setIsTrackChanged(false);
@@ -133,7 +159,7 @@ function Player({
                 firstImage.querySelector('img').src = trackInfo.image;
             }
         }).catch((err) => {
-            console.error(err.message);
+            console.error(getErrorMessage(err));
         });
     }, []);
 

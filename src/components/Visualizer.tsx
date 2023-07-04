@@ -1,24 +1,35 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-function Visualizer({ isPlaying, isTrackInfoReceived }) {
-    const streamUrl = `http://localhost:${import.meta.env.VITE_BACKEND_PORT}/stream`;
-    const [audioElement, setAudioElement] = useState(null);
-    const [analyser, setAnalyser] = useState(null);
-    const [dataArray, setDataArray] = useState([]);
+export interface VisualizerInterface {
+    isPlaying: boolean;
+    isTrackInfoReceived: boolean;
+}
+
+function Visualizer({
+                        isPlaying,
+                        isTrackInfoReceived
+}: VisualizerInterface) {
     const [isAudioPlaying, setIsAudioPlaying] = useState(isPlaying);
-    const visualizerRef = useRef(null);
-    const audioContextRef = useRef(null);
+    const streamUrl = `http://localhost:${import.meta.env.VITE_BACKEND_PORT}/stream`;
+
+    const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+    const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+    const [dataArray, setDataArray] = useState<Uint8Array>(new Uint8Array([]));
+    const visualizerRef = useRef<HTMLCanvasElement | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
 
     useEffect(() => {
         if (isTrackInfoReceived) {
-            audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-            const analyserNode = audioContextRef.current.createAnalyser();
+            audioContextRef.current = new AudioContext();
+            const analyserNode = audioContextRef.current?.createAnalyser();
             analyserNode.fftSize = 128;
             const bufferLength = analyserNode.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
 
-            analyserNode.connect(audioContextRef.current.destination);
+            if ("destination" in audioContextRef.current) {
+                analyserNode.connect(audioContextRef.current.destination);
+            }
             setAnalyser(analyserNode);
             setDataArray(dataArray);
 
@@ -30,8 +41,10 @@ function Visualizer({ isPlaying, isTrackInfoReceived }) {
 
     useEffect(() => {
         if (audioElement && analyser) {
-            const sourceNode = audioContextRef.current.createMediaElementSource(audioElement);
-            sourceNode.connect(analyser);
+            if (audioContextRef.current && "createMediaElementSource" in audioContextRef.current) {
+                const sourceNode = audioContextRef.current.createMediaElementSource(audioElement);
+                sourceNode.connect(analyser);
+            }
         }
     }, [audioElement, analyser]);
 
@@ -40,26 +53,31 @@ function Visualizer({ isPlaying, isTrackInfoReceived }) {
             // FROM TOP TO BOTTOM
             const renderVisualization = () => {
                 if (visualizerRef.current) {
-                    const canvas = visualizerRef.current;
-                    const canvasContext = canvas.getContext('2d');
-                    const { width, height } = canvas;
+                    const canvas: HTMLCanvasElement | null = visualizerRef.current;
+                    if ("getContext" in canvas) {
+                        const canvasContext = canvas.getContext('2d');
 
-                    analyser.getByteFrequencyData(dataArray);
+                        if (canvasContext) {
+                            const { width, height } = canvas;
 
-                    canvasContext.clearRect(0, 0, width, height);
+                            analyser.getByteFrequencyData(dataArray);
 
-                    const barWidth = width / dataArray.length;
-                    const barHeightMultiplier = height / 255;
-                    canvasContext.globalAlpha = 0.5;
-                    for (let i = 0; i < dataArray.length; i++) {
-                        const barHeight = dataArray[i] * barHeightMultiplier;
-                        const x = i * barWidth;
-                        const y = 0;
-                        canvasContext.fillStyle = `hsl(${i * 2}, 100%, 50%)`;
-                        canvasContext.fillRect(x, y, barWidth, barHeight);
+                            canvasContext.clearRect(0, 0, width, height);
+
+                            const barWidth = width / dataArray.length;
+                            const barHeightMultiplier = height / 255;
+                            canvasContext.globalAlpha = 0.5;
+                            for (let i = 0; i < dataArray.length; i++) {
+                                const barHeight = dataArray[i] * barHeightMultiplier;
+                                const x = i * barWidth;
+                                const y = 0;
+                                canvasContext.fillStyle = `hsl(${i * 2}, 100%, 50%)`;
+                                canvasContext.fillRect(x, y, barWidth, barHeight);
+                            }
+
+                            requestAnimationFrame(renderVisualization);
+                        }
                     }
-
-                    requestAnimationFrame(renderVisualization);
                 }
             };
 
@@ -72,8 +90,8 @@ function Visualizer({ isPlaying, isTrackInfoReceived }) {
     }, [isPlaying]);
 
     const handleTogglePlay = () => {
-        if (audioElement && audioContextRef.current.state === 'suspended') {
-            audioContextRef.current.resume();
+        if (audioElement && audioContextRef.current?.state === 'suspended') {
+            audioContextRef.current?.resume();
         }
 
         if (audioElement) {

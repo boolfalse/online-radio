@@ -7,7 +7,15 @@ const socket = io(`http://localhost:${socketPort}`, {
     transports: ['websocket'],
 });
 
-function Info({ setCurrentTrackInfo, setIsTrackChanged }) {
+export interface InfoInterface {
+    setCurrentTrackInfo: Function;
+    setIsTrackChanged: Function;
+}
+
+function Info({
+                  setCurrentTrackInfo,
+                  setIsTrackChanged
+}: InfoInterface) {
     const [listenersCount, setListenersCount] = useState(0);
 
     useEffect(() => {

@@ -12,6 +12,7 @@ function App() {
         image: '/default.png',
         duration: 0,
         time: '0:00',
+        difference_in_seconds: 0,
     };
     const [currentTrackInfo, setCurrentTrackInfo] = useState(defaultTrackInfo);
 
