@@ -2,28 +2,7 @@
 import {useEffect, useRef, useState} from "react";
 import { Line } from 'rc-progress';
 import axios from "axios";
-
-export interface PlayerInterface {
-    defaultTrackInfo: {
-        title: string;
-        image: string;
-        duration: number;
-        time: string;
-        difference_in_seconds: number;
-    };
-    isPlaying: boolean;
-    setIsPlaying: Function;
-    currentTrackInfo: {
-        title: string;
-        image: string;
-        duration: number;
-        time: string;
-        difference_in_seconds: number;
-    };
-    setCurrentTrackInfo: Function;
-    isTrackChanged: boolean;
-    setIsTrackChanged: Function;
-}
+import PlayerInterface from './../interfaces/PlayerInterface.ts'
 
 function Player({
                     defaultTrackInfo,

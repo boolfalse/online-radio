@@ -1,16 +1,12 @@
 
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
+import InfoInterface from './../interfaces/InfoInterface.ts'
 
 const socketPort = import.meta.env.VITE_SOCKET_PORT;
 const socket = io(`http://localhost:${socketPort}`, {
     transports: ['websocket'],
 });
-
-export interface InfoInterface {
-    setCurrentTrackInfo: Function;
-    setIsTrackChanged: Function;
-}
 
 function Info({
                   setCurrentTrackInfo,

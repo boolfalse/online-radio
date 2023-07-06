@@ -1,10 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-
-export interface VisualizerInterface {
-    isPlaying: boolean;
-    isTrackInfoReceived: boolean;
-}
+import VisualizerInterface from './../interfaces/VisualizerInterface.ts';
 
 function Visualizer({
                         isPlaying,
