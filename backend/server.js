@@ -8,7 +8,7 @@ const express = require('express');
 const openRadio = require('openradio');
 const cors = require('cors');
 const SocketIO = require('socket.io');
-const { downloadFileFromGoogleDrive, getGistFileContent, getTrackDuration } = require('./utils');
+const { downloadFileFromGoogleDrive, getGistFileContent, getTrackDuration, exitHandler } = require('./utils');
 
 
 
@@ -134,6 +134,10 @@ const playTrack = () => {
     // get playlist from gist
     getGistFileContent(process.env.RADIO_GIST_ID, `${playlistFile}.json`)
         .then((data) => {
+            if (!data) {
+                exitHandler('Playlist file is empty!');
+            }
+
             const playlist = JSON.parse(data);
             const randomNumber = Math.floor(Math.random() * playlist.length);
             // download random track from the source
@@ -159,11 +163,11 @@ const playTrack = () => {
                     }, manualDelayTrackChangedEventSeconds * 1000);
                 })
                 .catch((err) => {
-                    console.log(err.message);
+                    exitHandler(err.message || 'Error while downloading track!');
                 });
         })
         .catch((err) => {
-            console.log(err.message);
+            exitHandler(err.message || 'Error while getting playlist!');
         });
 }
 
