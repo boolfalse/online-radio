@@ -1,7 +1,7 @@
 
 import Player from "./components/Player.tsx";
 import Visualizer from "./components/Visualizer.tsx";
-import {useState} from "react";
+import React, {useState} from "react";
 import Info from "./components/Info.tsx";
 
 function App() {

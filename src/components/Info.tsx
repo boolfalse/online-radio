@@ -1,6 +1,6 @@
 
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import React, { useEffect, useState } from 'react';
+import {io} from 'socket.io-client';
 import InfoInterface from './../interfaces/InfoInterface.ts'
 
 const socketPort = import.meta.env.VITE_SOCKET_PORT;
@@ -22,7 +22,7 @@ function Info({
             setCurrentTrackInfo(data);
             setIsTrackChanged(true);
         });
-    }, []);
+    });
 
     return (
         <div id="info_container">

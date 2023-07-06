@@ -1,5 +1,7 @@
 
+import trackInfoType from "../types/trackInfoType";
+
 export default interface InfoInterface {
-    setCurrentTrackInfo: Function;
-    setIsTrackChanged: Function;
+    setCurrentTrackInfo: (trackInfo: trackInfoType) => void;
+    setIsTrackChanged: (isTrackChanged: boolean) => void;
 }

@@ -1,22 +1,12 @@
 
+import trackInfoType from "../types/trackInfoType";
+
 export default interface PlayerInterface {
-    defaultTrackInfo: {
-        title: string;
-        image: string;
-        duration: number;
-        time: string;
-        difference_in_seconds: number;
-    };
+    defaultTrackInfo: trackInfoType;
     isPlaying: boolean;
-    setIsPlaying: Function;
-    currentTrackInfo: {
-        title: string;
-        image: string;
-        duration: number;
-        time: string;
-        difference_in_seconds: number;
-    };
-    setCurrentTrackInfo: Function;
+    setIsPlaying: (isPlaying: boolean) => void;
+    currentTrackInfo: trackInfoType;
+    setCurrentTrackInfo: (trackInfo: trackInfoType) => void;
     isTrackChanged: boolean;
-    setIsTrackChanged: Function;
+    setIsTrackChanged: (isTrackChanged: boolean) => void;
 }

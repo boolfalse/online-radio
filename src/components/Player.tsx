@@ -1,5 +1,5 @@
 
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Line } from 'rc-progress';
 import PlayerInterface from './../interfaces/PlayerInterface.ts'
 import {getErrorMessage, getTrackInfo, timeFormat} from "../utils.ts";
@@ -23,7 +23,7 @@ function Player({
     const [btnPlayDisplay, setBtnPlayDisplay] = useState(true);
 
     const [cubeDegree, setCubeDegree] = useState(0);
-    const cubeRef: any = useRef(null);
+    const cubeRef = useRef<HTMLDivElement | null>(null);
 
     const startProgress = () => {
         if (currentTrackInfo.duration === 0) {
@@ -51,6 +51,15 @@ function Player({
             cubeRef.current.style.transform = `rotateY(${newCubeDegree}deg)`;
             setCubeDegree(newCubeDegree);
         }, 0.1 * 1000); // manual delay
+    }
+
+    const handlePlay = (play) => {
+        setIsPlaying(play); setBtnPlayDisplay(!play);
+    };
+    const handleKeyDown = (e, play: boolean) => {
+        if (e.keyCode === 32) {
+            handlePlay(play);
+        }
     }
 
     useEffect(() => {
@@ -103,7 +112,6 @@ function Player({
                         newSec = 0;
                         newMin += 1;
                     }
-                    // TODO: use utils (timeFormat)
                     const formattedSec = (newSec < 10) ? `0${newSec}` : newSec;
                     const formattedMin = (newMin < 10) ? `0${newMin}` : newMin;
                     setTrackTiming(`${formattedMin}:${formattedSec}`);
@@ -122,16 +130,16 @@ function Player({
                 <div className="container">
                     <div className="image-cube" ref={cubeRef}>
                         <div className="pos-0">
-                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                            <img src={defaultTrackInfo.image} alt="Track"/>
                         </div>
                         <div className="pos-90">
-                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                            <img src={defaultTrackInfo.image} alt="Track"/>
                         </div>
                         <div className="pos-180">
-                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                            <img src={defaultTrackInfo.image} alt="Track"/>
                         </div>
                         <div className="pos-270">
-                            <img src={defaultTrackInfo.image} alt="Track image"/>
+                            <img src={defaultTrackInfo.image} alt="Track"/>
                         </div>
                     </div>
                 </div>
@@ -152,11 +160,15 @@ function Player({
             <div id="controls_container">
                 <div className="control" id="btn_controls">
                     <i id="btn_play"
-                       onClick={() => {setIsPlaying(true); setBtnPlayDisplay(false);}}
+                       aria-hidden="true"
+                       onClick={() => handlePlay(true)}
+                       onKeyDown={(e) => handleKeyDown(e, true)}
                        style={{display: btnPlayDisplay ? 'block' : 'none'}}
                        className="material-icons icon">&#xE037;</i>
                     <i id="btn_pause"
-                       onClick={() => {setIsPlaying(false); setBtnPlayDisplay(true);}}
+                       aria-hidden="true"
+                       onClick={() => handlePlay(false)}
+                       onKeyDown={(e) => handleKeyDown(e, false)}
                        style={{display: btnPlayDisplay ? 'none' : 'block'}}
                        className="material-icons icon">&#xE034;</i>
                 </div>

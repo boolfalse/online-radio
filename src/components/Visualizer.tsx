@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import VisualizerInterface from './../interfaces/VisualizerInterface.ts';
 
 function Visualizer({
@@ -108,10 +108,11 @@ function Visualizer({
             {isTrackInfoReceived && (
                 <audio crossOrigin='anonymous' ref={setAudioElement} controls style={{ display: 'none' }}>
                     <source src={streamUrl} type='audio/mpeg' />
+                    <track kind='captions' />
                 </audio>
             )}
         </div>
     );
-};
+}
 
 export default Visualizer;
