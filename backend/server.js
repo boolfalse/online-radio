@@ -4,12 +4,11 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
-const ffmpeg = require("fluent-ffmpeg");
 const express = require('express');
 const openRadio = require('openradio');
 const cors = require('cors');
 const SocketIO = require('socket.io');
-const { downloadFileFromGoogleDrive, getGistFileContent } = require('./utils');
+const { downloadFileFromGoogleDrive, getGistFileContent, getTrackDuration } = require('./utils');
 
 
 
@@ -139,32 +138,25 @@ const playTrack = () => {
             const randomNumber = Math.floor(Math.random() * playlist.length);
             // download random track from the source
             downloadFileFromGoogleDrive(playlist[randomNumber].file, trackPath)
-                .then(() => {
-                    ffmpeg.ffprobe(trackPath, (err, metadata) => {
-                        if (err) {
-                            console.log(err.message);
-                            return;
-                        }
-                        const trackDuration = metadata.format.duration;
-                        const duration = trackDuration ? Math.floor(trackDuration) : 0;
-                        if (duration === 0) {
-                            console.log('Track duration is 0, skipping...');
-                            playTrack();
-                            return;
-                        }
+                .then(async () => {
+                    const duration = await getTrackDuration(trackPath);
+                    if (duration === 0) {
+                        console.log('Track duration is 0, skipping...');
+                        playTrack();
+                        return;
+                    }
 
-                        radio.play(fs.createReadStream(trackPath));
+                    radio.play(fs.createReadStream(trackPath));
 
-                        trackInfo.title = playlist[randomNumber].title;
-                        trackInfo.image = playlist[randomNumber].image;
-                        trackInfo.duration = duration; // playlist[randomNumber].duration;
-                        trackInfo.started_at = Math.floor(Date.now() / 1000);
+                    trackInfo.title = playlist[randomNumber].title;
+                    trackInfo.image = playlist[randomNumber].image;
+                    trackInfo.duration = duration; // playlist[randomNumber].duration;
+                    trackInfo.started_at = Math.floor(Date.now() / 1000);
 
-                        setTimeout(() => {
-                            console.log(`Playing track: ${trackInfo.title}`);
-                            io.sockets.emit('track_changed', trackInfo);
-                        }, manualDelayTrackChangedEventSeconds * 1000);
-                    });
+                    setTimeout(() => {
+                        console.log(`Playing track: ${trackInfo.title}`);
+                        io.sockets.emit('track_changed', trackInfo);
+                    }, manualDelayTrackChangedEventSeconds * 1000);
                 })
                 .catch((err) => {
                     console.log(err.message);

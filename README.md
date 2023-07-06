@@ -27,9 +27,11 @@ git clone git@github.com:boolfalse/online-radio.git && cd online-radio
 npm install && cd backend && npm install && cd ..
 ```
 
+- Make sure to have a [GitHub Gist](https://gist.github.com/boolfalse/6b66a0065c70a33f95e0e831cb0c7e9f#file-tracks-json) JSON file with the tracks in it.
+
 - Set up environment variables in ".env" file as described in ".env.example" file.
 ```dotenv
-RADIO_GIST_ID="***"
+RADIO_GIST_ID="6b66a0065c70a33f95e0e831cb0c7e9f"
 RADIO_PLAYLIST_FILE="tracks"
 
 VITE_BACKEND_PORT=5000
@@ -45,6 +47,8 @@ npm run dev
 # production (TODO: review before production)
 npm run build && npm run start
 ```
+
+- Check out [http://localhost:5001](http://localhost:5001) on local environment.
 
 
 

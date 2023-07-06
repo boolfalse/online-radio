@@ -1,6 +1,7 @@
 
 const axios = require("axios");
 const fs = require("fs");
+const ffmpeg = require("fluent-ffmpeg");
 
 module.exports = {
     downloadFileFromGoogleDrive: async (fileUrl, destinationFile) => {
@@ -30,4 +31,18 @@ module.exports = {
             console.log(err.message);
         }
     },
+    getTrackDuration: (trackPath) => {
+        return new Promise((resolve, reject) => {
+            ffmpeg.ffprobe(trackPath, (err, metadata) => {
+                if (err) {
+                    console.log(err.message);
+                    reject(err);
+                }
+                const trackDuration = metadata.format.duration;
+                const duration = trackDuration ? Math.floor(trackDuration) : 0;
+
+                resolve(duration);
+            });
+        })
+    }
 };
