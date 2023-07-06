@@ -92,10 +92,12 @@ function Player({
             }
             setIsTrackChanged(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isTrackChanged]);
 
     useEffect(() => {
         setTrackTiming(startTiming === defaultTrackInfo.time ? defaultTrackInfo.time : startTiming);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [startTiming]);
     useEffect(() => {
         if (currentTrackInfo.time !== defaultTrackInfo.time) { // TODO: || check that track just changed
@@ -120,6 +122,7 @@ function Player({
 
             return () => clearInterval(interval);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trackTiming, trackDuration]); // TODO: , check that track just changed
 
     return <>

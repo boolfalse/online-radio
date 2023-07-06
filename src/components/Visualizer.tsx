@@ -83,6 +83,7 @@ function Visualizer({
 
     useEffect(() => {
         handleTogglePlay();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying]);
 
     const handleTogglePlay = () => {
