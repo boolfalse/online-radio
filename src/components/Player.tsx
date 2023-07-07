@@ -1,5 +1,5 @@
 
-import React, {useEffect, useRef, useState} from "react";
+import React from "react";
 import { Line } from 'rc-progress';
 import PlayerInterface from './../interfaces/PlayerInterface.ts'
 import {getErrorMessage, getTrackInfo, timeFormat} from "../utils.ts";
@@ -13,17 +13,17 @@ function Player({
                     isTrackChanged,
                     setIsTrackChanged,
 }: PlayerInterface) {
-    const [firstLoad, setFirstLoad] = useState(true);
+    const [firstLoad, setFirstLoad] = React.useState(true);
     const progressIntervalSeconds = 1;
-    const [startTiming, setStartTiming] = useState(defaultTrackInfo.time); // start timing (for example, '1:04')
-    const [trackTiming, setTrackTiming] = useState(defaultTrackInfo.time); // the current timing (for example, '1:12')
-    const [trackDuration, setTrackDuration] = useState(defaultTrackInfo.time); // formatted duration (for example, '3:45')
+    const [startTiming, setStartTiming] = React.useState(defaultTrackInfo.time); // start timing (for example, '1:04')
+    const [trackTiming, setTrackTiming] = React.useState(defaultTrackInfo.time); // the current timing (for example, '1:12')
+    const [trackDuration, setTrackDuration] = React.useState(defaultTrackInfo.time); // formatted duration (for example, '3:45')
 
-    const [progressPercent, setProgressPercent] = useState(0);
-    const [btnPlayDisplay, setBtnPlayDisplay] = useState(true);
+    const [progressPercent, setProgressPercent] = React.useState(0);
+    const [btnPlayDisplay, setBtnPlayDisplay] = React.useState(true);
 
-    const [cubeDegree, setCubeDegree] = useState(0);
-    const cubeRef = useRef<HTMLDivElement | null>(null);
+    const [cubeDegree, setCubeDegree] = React.useState(0);
+    const cubeRef = React.useRef<HTMLDivElement>(null);
 
     const startProgress = () => {
         if (currentTrackInfo.duration === 0) {
@@ -45,24 +45,22 @@ function Player({
     }
     const rotateCube = (trackImage: string) => {
         const newCubeDegree = (cubeDegree - 90) % 360;
-        const nextImage = cubeRef.current.querySelector(`.pos-${newCubeDegree * -1}`);
-        nextImage.querySelector('img').src = trackImage; // currentTrackInfo.image
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const nextImage = cubeRef.current!.querySelector(`.pos-${newCubeDegree * -1}`);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nextImage!.querySelector('img')!.src = trackImage; // currentTrackInfo.image
         setTimeout(() => {
-            cubeRef.current.style.transform = `rotateY(${newCubeDegree}deg)`;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            cubeRef.current!.style.transform = `rotateY(${newCubeDegree}deg)`;
             setCubeDegree(newCubeDegree);
         }, 0.1 * 1000); // manual delay
     }
 
-    const handlePlay = (play) => {
+    const handlePlay = (play: boolean) => {
         setIsPlaying(play); setBtnPlayDisplay(!play);
     };
-    const handleKeyDown = (e, play: boolean) => {
-        if (e.keyCode === 32) {
-            handlePlay(play);
-        }
-    }
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (isTrackChanged) {
             getTrackInfo().then((trackInfo) => {
                 if (trackInfo.success) {
@@ -77,8 +75,10 @@ function Player({
                     startProgress();
 
                     if (firstLoad) {
-                        const firstImage = cubeRef.current.querySelector(`.pos-0`);
-                        firstImage.querySelector('img').src = trackInfo.image;
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        const firstImage = cubeRef.current!.querySelector(`.pos-0`);
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        firstImage!.querySelector('img')!.src = trackInfo.image;
                     }
 
                     rotateCube(trackInfo.image);
@@ -95,11 +95,11 @@ function Player({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isTrackChanged]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         setTrackTiming(startTiming === defaultTrackInfo.time ? defaultTrackInfo.time : startTiming);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [startTiming]);
-    useEffect(() => {
+    React.useEffect(() => {
         if (currentTrackInfo.time !== defaultTrackInfo.time) { // TODO: || check that track just changed
             const interval = setInterval(() => {
                 const [currentMin, currentSec] = trackTiming.split(':').map(Number);
@@ -165,13 +165,11 @@ function Player({
                     <i id="btn_play"
                        aria-hidden="true"
                        onClick={() => handlePlay(true)}
-                       onKeyDown={(e) => handleKeyDown(e, true)}
                        style={{display: btnPlayDisplay ? 'block' : 'none'}}
                        className="material-icons icon">&#xE037;</i>
                     <i id="btn_pause"
                        aria-hidden="true"
                        onClick={() => handlePlay(false)}
-                       onKeyDown={(e) => handleKeyDown(e, false)}
                        style={{display: btnPlayDisplay ? 'none' : 'block'}}
                        className="material-icons icon">&#xE034;</i>
                 </div>

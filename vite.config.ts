@@ -6,6 +6,10 @@ export default ({ mode }) => {
     const envVars = loadEnv(mode, process.cwd());
 
     return defineConfig({
+        build: {
+            minify: 'esbuild',
+            cssMinify: true,
+        },
         plugins: [react()],
         server: {
             port: parseInt(envVars.VITE_SERVER_PORT),

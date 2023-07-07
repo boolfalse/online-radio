@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {io} from 'socket.io-client';
 import InfoInterface from './../interfaces/InfoInterface.ts'
 
@@ -12,9 +12,9 @@ function Info({
                   setCurrentTrackInfo,
                   setIsTrackChanged
 }: InfoInterface) {
-    const [listenersCount, setListenersCount] = useState(0);
+    const [listenersCount, setListenersCount] = React.useState(0);
 
-    useEffect(() => {
+    React.useEffect(() => {
         socket.on('listeners_count', (count) => {
             setListenersCount(count);
         });

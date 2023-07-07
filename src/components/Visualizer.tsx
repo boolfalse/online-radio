@@ -1,21 +1,21 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import VisualizerInterface from './../interfaces/VisualizerInterface.ts';
 
 function Visualizer({
                         isPlaying,
                         isTrackInfoReceived
 }: VisualizerInterface) {
-    const [isAudioPlaying, setIsAudioPlaying] = useState(isPlaying);
+    const [isAudioPlaying, setIsAudioPlaying] = React.useState(isPlaying);
     const streamUrl = `http://localhost:${import.meta.env.VITE_BACKEND_PORT}/stream`;
 
-    const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-    const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
-    const [dataArray, setDataArray] = useState<Uint8Array>(new Uint8Array([]));
-    const visualizerRef = useRef<HTMLCanvasElement | null>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
+    const [audioElement, setAudioElement] = React.useState<HTMLAudioElement | null>(null);
+    const [analyser, setAnalyser] = React.useState<AnalyserNode | null>(null);
+    const [dataArray, setDataArray] = React.useState<Uint8Array>(new Uint8Array([]));
+    const visualizerRef = React.useRef<HTMLCanvasElement | null>(null);
+    const audioContextRef = React.useRef<AudioContext | null>(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (isTrackInfoReceived) {
             audioContextRef.current = new AudioContext();
             const analyserNode = audioContextRef.current?.createAnalyser();
@@ -35,7 +35,7 @@ function Visualizer({
         }
     }, [isTrackInfoReceived]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (audioElement && analyser) {
             if (audioContextRef.current && "createMediaElementSource" in audioContextRef.current) {
                 const sourceNode = audioContextRef.current.createMediaElementSource(audioElement);
@@ -44,7 +44,7 @@ function Visualizer({
         }
     }, [audioElement, analyser]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (analyser) {
             // FROM TOP TO BOTTOM
             const renderVisualization = () => {
@@ -81,7 +81,7 @@ function Visualizer({
         }
     }, [analyser, dataArray]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         handleTogglePlay();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying]);

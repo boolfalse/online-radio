@@ -1,12 +1,12 @@
 
 import Player from "./components/Player.tsx";
 import Visualizer from "./components/Visualizer.tsx";
-import React, {useState} from "react";
+import React from "react";
 import Info from "./components/Info.tsx";
 
 function App() {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isTrackChanged, setIsTrackChanged] = useState(false);
+    const [isPlaying, setIsPlaying] = React.useState(false);
+    const [isTrackChanged, setIsTrackChanged] = React.useState(false);
     const defaultTrackInfo = {
         title: 'Artist - Title',
         image: '/default.png',
@@ -14,7 +14,7 @@ function App() {
         time: '0:00',
         difference_in_seconds: 0,
     };
-    const [currentTrackInfo, setCurrentTrackInfo] = useState(defaultTrackInfo);
+    const [currentTrackInfo, setCurrentTrackInfo] = React.useState(defaultTrackInfo);
 
     return (
         <>
