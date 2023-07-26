@@ -1,6 +1,8 @@
 
 ## Online Radio
 
+<img src="https://i.imgur.com/P56zt04.png" alt="Online Radio" />
+
 This is a simple online radio app built with following technologies:
 
 - [React.js](https://react.dev/)
