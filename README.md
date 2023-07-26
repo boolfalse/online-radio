@@ -1,8 +1,10 @@
 
 ## Online Radio
 
-This is a simple online radio app built with [React.js](https://react.dev/) and [Node.js](https://nodejs.org/), using following technologies:
+This is a simple online radio app built with following technologies:
 
+- [React.js](https://react.dev/)
+- [Node.js](https://nodejs.org/)
 - [Vite](https://vitejs.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [AudioContext (Web API)](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext)
@@ -32,6 +34,9 @@ npm install && cd backend && npm install && cd ..
 
 - Set up environment variables in ".env" file as described in ".env.example" file.
 ```dotenv
+NODE_VERSION="18.16.0"
+APP_ENV="development"
+
 RADIO_GIST_ID="6b66a0065c70a33f95e0e831cb0c7e9f"
 RADIO_PLAYLIST_FILE="tracks"
 
