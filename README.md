@@ -34,7 +34,33 @@ npm install && cd backend && npm install && cd ..
 
 - Make sure to have a [GitHub Gist](https://gist.github.com/boolfalse/6b66a0065c70a33f95e0e831cb0c7e9f#file-tracks-json) JSON file with the tracks in it.
 
-- Set up environment variables in ".env" file as described in ".env.example" file.
+- JSON file sample:
+
+```json
+[
+  {
+    "title": "Harp Arpeggio - Medieval Tune",
+    "file": "https://cdn.freesound.org/previews/564/564024_12539862-lq.mp3",
+    "image": "https://dummyimage.com/480x360/c2ccb2/ff6200&text=Harp%20Arpeggio%20-%20Medieval%20Tune",
+    "source_url": "https://freesound.org/people/gertraut_hecher/sounds/564024/"
+  },
+  {
+    "title": "Punta Secca Waves 2",
+    "file": "https://cdn.freesound.org/previews/353/353102_2874677-lq.mp3",
+    "image": "https://dummyimage.com/480x360/c2ccb2/ff6200&text=Punta%20Secca%20Waves%202",
+    "source_url": "https://freesound.org/people/microsome/sounds/353102/"
+  }
+]
+```
+
+- For minimizing the track before uploading to the cloud you can run:
+
+```shell
+# following command will convert "input.mp3" to "output.mp3" with the 96 kbit/second quality
+ffmpeg -i input.mp3 -codec:a libmp3lame -b:a 96k output.mp3
+```
+
+- Setup environment variables in ".env" file as described in ".env.example" file.
 ```dotenv
 NODE_VERSION="18.16.0"
 APP_ENV="development"
